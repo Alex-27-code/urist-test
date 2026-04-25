@@ -18,7 +18,13 @@ def global_init(db_file):
     import backend.database.models.users_model
     import backend.database.models.booking_model
 
-    conn_str = f'sqlite:///{db_file.strip()}?check_same_thread=False'
+    import os
+    db_path = db_file.strip()
+    folder = os.path.dirname(db_path)
+    if folder and not os.path.exists(folder):
+        os.makedirs(folder, exist_ok=True)
+
+    conn_str = f'sqlite:///{db_path}?check_same_thread=False'
     engine = sa.create_engine(conn_str, echo=False)
     __factory = orm.sessionmaker(bind=engine)
 
@@ -32,4 +38,3 @@ def create_session():
     return __factory()
 
 
-global_init('data/urist.db')

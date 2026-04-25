@@ -232,7 +232,7 @@ def booking_action(booking_id, action):
 
 
 def main():
-    db_session.global_init('data/urist.db')
+    global_init('data/urist.db')
     default_data.default_data()
     port = int(os.getenv('FLASK_PORT', 80))
     host = os.getenv('FLASK_HOST', '0.0.0.0')

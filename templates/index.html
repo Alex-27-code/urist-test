@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="mb-4">Юридическая консультация</h1>
+
+{% if current_user.is_authenticated %}
+    {% if lawyers %}
+    <h3 class="mb-3">Доступные юристы</h3>
+    <div class="row">
+        {% for lawyer in lawyers %}
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-start">
+                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center mr-3" style="width:60px;height:60px;font-size:24px;font-weight:bold;">
+                            {% if lawyer.photo %}
+                                <img src="{{ url_for('static', filename='uploads/' + lawyer.photo) }}" style="width:60px;height:60px;object-fit:cover;border-radius:50%;">
+                            {% else %}
+                                {{ lawyer.name[0] if lawyer.name else '?' }}
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="card-title">{{ lawyer.name }}</h5>
+                            {% if lawyer.specialty %}
+                                <p class="text-muted mb-1"><small>{{ lawyer.specialty }}</small></p>
+                            {% endif %}
+                            {% if lawyer.price %}
+                                <p class="font-weight-bold mb-1">{{ lawyer.price }}</p>
+                            {% endif %}
+                            {% if lawyer.schedule %}
+                                <p class="text-muted mb-2"><small>{{ lawyer.schedule }}</small></p>
+                            {% endif %}
+                            {% if lawyer.about %}
+                                <p class="text-muted mb-2"><small>{{ lawyer.about }}</small></p>
+                            {% endif %}
+                            <a href="/lawyer/{{ lawyer.id }}" class="btn btn-primary btn-sm">Записаться</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">Юристы скоро появятся.</div>
+    {% endif %}
+{% else %}
+    <div class="alert alert-info">
+        <a href="/login">Войдите</a> или <a href="/register">зарегистрируйтесь</a> чтобы увидеть юристов.
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="mb-4">Отдел клиентов</h1>
+
+{% if bookings %}
+<div class="row">
+    {% for b in bookings %}
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>{{ b.date }} {{ b.time }}</span>
+                {% if b.status == 'pending' %}
+                    <span class="badge badge-warning">Ожидает</span>
+                {% elif b.status == 'accepted' %}
+                    <span class="badge badge-success">Принято</span>
+                {% else %}
+                    <span class="badge badge-danger">Отклонено</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <p><strong>Клиент:</strong> {{ b.client.name if b.client else 'Неизвестно' }}</p>
+                {% if b.lawyer %}
+                <p><strong>Юрист:</strong> {{ b.lawyer.name }}</p>
+                {% endif %}
+                <p><strong>Вопрос:</strong></p>
+                <p>{{ b.problem }}</p>
+                {% if b.status == 'pending' %}
+                <form method="post" action="/booking_action/{{ b.id }}/accept" class="d-inline">
+                    <button type="submit" class="btn btn-success btn-sm">Принять</button>
+                </form>
+                <form method="post" action="/booking_action/{{ b.id }}/reject" class="d-inline">
+                    <button type="submit" class="btn btn-danger btn-sm">Отклонить</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">Заявок пока нет.</div>
+{% endif %}
+{% endblock %}

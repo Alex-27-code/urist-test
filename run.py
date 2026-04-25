@@ -6,10 +6,11 @@ os.chdir(_project_dir)
 sys.path.insert(0, _project_dir)
 
 from app import app
-from backend.database import global_init, default_data
+import backend.database.default_data as dd
+from backend.database import global_init
 
 global_init('data/urist.db')
-default_data()
+dd.default_data()
 
 if __name__ == '__main__':
     port = int(os.getenv('FLASK_PORT', 5555))

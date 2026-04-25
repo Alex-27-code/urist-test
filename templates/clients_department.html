@@ -1,44 +1,67 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="mb-4">Отдел клиентов</h1>
+<div class="max-w-7xl mx-auto">
+    <header class="mb-12">
+        <h1 class="text-4xl font-semibold text-primary mb-4">Отдел клиентов</h1>
+        <p class="text-lg text-on-surface-variant">
+            Здесь отображаются все заявки от клиентов. Принимайте или отклоняйте заявки.
+        </p>
+    </header>
 
-{% if bookings %}
-<div class="row">
-    {% for b in bookings %}
-    <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span>{{ b.date }} {{ b.time }}</span>
-                {% if b.status == 'pending' %}
-                    <span class="badge badge-warning">Ожидает</span>
-                {% elif b.status == 'accepted' %}
-                    <span class="badge badge-success">Принято</span>
-                {% else %}
-                    <span class="badge badge-danger">Отклонено</span>
-                {% endif %}
+    {% if bookings %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        {% for b in bookings %}
+        <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 shadow-sm relative">
+            <div class="absolute top-4 right-4 text-xs font-bold px-3 py-1 rounded-lg 
+                {% if b.status == 'pending' %}bg-yellow-100 text-yellow-800
+                {% elif b.status == 'accepted' %}bg-green-100 text-green-800
+                {% else %}bg-red-100 text-red-800{% endif %}">
+                {{ b.date }} | {{ b.time }}
             </div>
-            <div class="card-body">
-                <p><strong>Клиент:</strong> {{ b.client.name if b.client else 'Неизвестно' }}</p>
+            <h3 class="text-xl font-bold text-primary mb-2 pt-6">{{ b.client.name if b.client else 'Клиент' }}</h3>
+            <div class="space-y-3 mb-4">
                 {% if b.lawyer %}
-                <p><strong>Юрист:</strong> {{ b.lawyer.name }}</p>
+                <p class="text-sm">
+                    <span class="text-on-surface-variant font-medium">Юрист:</span> 
+                    <span class="text-primary font-semibold">{{ b.lawyer.name }}</span>
+                </p>
                 {% endif %}
-                <p><strong>Вопрос:</strong></p>
-                <p>{{ b.problem }}</p>
+                <div class="bg-surface-container-low p-4 rounded-lg border border-outline-variant/20">
+                    <p class="text-xs text-on-surface-variant tracking-wider uppercase font-bold mb-1">Вопрос клиента:</p>
+                    <p class="text-primary text-sm">{{ b.problem }}</p>
+                </div>
+            </div>
+            
+            <div class="mt-4 pt-4 border-t border-outline-variant/30">
                 {% if b.status == 'pending' %}
-                <form method="post" action="/booking_action/{{ b.id }}/accept" class="d-inline">
-                    <button type="submit" class="btn btn-success btn-sm">Принять</button>
-                </form>
-                <form method="post" action="/booking_action/{{ b.id }}/reject" class="d-inline">
-                    <button type="submit" class="btn btn-danger btn-sm">Отклонить</button>
-                </form>
+                <div class="flex gap-2">
+                    <form action="/booking_action/{{ b.id }}/accept" method="POST" class="flex-1">
+                        <button type="submit" class="w-full bg-emerald-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700 transition">Принять</button>
+                    </form>
+                    <form action="/booking_action/{{ b.id }}/reject" method="POST" class="flex-1">
+                        <button type="submit" class="w-full bg-error text-white py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition">Отклонить</button>
+                    </form>
+                </div>
+                {% else %}
+                <div class="text-center w-full py-2 rounded-lg text-sm font-bold border border-outline-variant/20">
+                    Статус: 
+                    {% if b.status == 'accepted' %}<span class="text-emerald-600">Принято ✓</span>
+                    {% else %}<span class="text-error">Отклонено ✗</span>{% endif %}
+                </div>
                 {% endif %}
             </div>
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
+    {% else %}
+    <div class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/20 shadow-sm text-center py-20">
+        <span class="material-symbols-outlined text-6xl text-outline mb-4">inbox</span>
+        <h2 class="text-2xl font-semibold text-primary mb-2">Заявок пока нет</h2>
+        <p class="text-on-surface-variant">
+            Когда клиенты отправят заявки, они появятся здесь.
+        </p>
+    </div>
+    {% endif %}
 </div>
-{% else %}
-<div class="alert alert-info">Заявок пока нет.</div>
-{% endif %}
 {% endblock %}

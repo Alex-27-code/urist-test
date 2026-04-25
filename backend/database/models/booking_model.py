@@ -12,3 +12,6 @@ class BookingModel(SqlAlchemyBase):
     time = sqlalchemy.Column(sqlalchemy.String)
     problem = sqlalchemy.Column(sqlalchemy.String)
     status = sqlalchemy.Column(sqlalchemy.String, default='pending')
+
+    client = sqlalchemy.orm.relationship('UserModel', foreign_keys=[client_id])
+    lawyer = sqlalchemy.orm.relationship('UserModel', foreign_keys=[lawyer_id])

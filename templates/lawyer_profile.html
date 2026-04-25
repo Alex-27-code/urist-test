@@ -1,82 +1,138 @@
 {% extends "base.html" %}
 
 {% block content %}
-<a href="/" class="btn btn-secondary mb-3">← На главную</a>
+<div class="max-w-5xl mx-auto">
+    <a href="/" class="inline-flex items-center gap-2 text-secondary hover:underline font-medium mb-8">
+        <span class="material-symbols-outlined text-sm">arrow_back</span>
+        Назад к списку
+    </a>
 
-<div class="row">
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-body text-center">
-                <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width:80px;height:80px;font-size:32px;font-weight:bold;">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-5 space-y-8">
+            <div class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/20 shadow-sm">
+                <div class="w-20 h-20 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-4xl font-bold mb-6 shadow-inner overflow-hidden">
                     {% if lawyer.photo %}
-                        <img src="{{ url_for('static', filename='uploads/' + lawyer.photo) }}" style="width:80px;height:80px;object-fit:cover;border-radius:50%;">
+                        <img src="{{ url_for('static', filename='uploads/' + lawyer.photo) }}" class="w-full h-full object-cover" alt="">
                     {% else %}
-                        {{ lawyer.name[0] if lawyer.name else '?' }}
+                        <span class="material-symbols-outlined text-[40px]">person</span>
                     {% endif %}
                 </div>
-                <h4>{{ lawyer.name }}</h4>
+                <h1 class="text-3xl font-bold text-primary mb-1">{{ lawyer.name }}</h1>
                 {% if lawyer.specialty %}
-                    <p class="text-muted">{{ lawyer.specialty }}</p>
+                    <p class="text-secondary font-medium uppercase tracking-wider text-xs mb-4">{{ lawyer.specialty }}</p>
                 {% endif %}
+                
                 {% if lawyer.price %}
-                    <p class="font-weight-bold">{{ lawyer.price }}</p>
+                <div class="flex items-center gap-2 mb-4 text-primary font-semibold">
+                    <span class="material-symbols-outlined text-secondary text-xl">payments</span>
+                    {{ lawyer.price }}
+                </div>
                 {% endif %}
+                
                 {% if lawyer.schedule %}
-                    <p class="text-muted"><small>{{ lawyer.schedule }}</small></p>
+                <div class="flex items-center gap-2 mb-4 text-primary">
+                    <span class="material-symbols-outlined text-secondary text-xl">schedule</span>
+                    <span class="text-sm">{{ lawyer.schedule }}</span>
+                </div>
                 {% endif %}
+                
                 {% if lawyer.experience %}
-                    <p class="text-muted"><small>Опыт: {{ lawyer.experience }}</small></p>
+                <div class="flex items-center gap-2 mb-4 text-primary">
+                    <span class="material-symbols-outlined text-secondary text-xl">work</span>
+                    <span class="text-sm">Опыт: {{ lawyer.experience }}</span>
+                </div>
                 {% endif %}
+                
                 {% if lawyer.about %}
-                    <p class="mt-2">{{ lawyer.about }}</p>
+                <div class="bg-surface-container-low p-5 rounded-lg border border-outline-variant/10 text-on-surface-variant leading-relaxed text-sm">
+                    {{ lawyer.about }}
+                </div>
                 {% endif %}
+            </div>
+            
+            <div class="bg-primary text-on-primary p-8 rounded-xl shadow-md">
+                <h3 class="text-xl font-semibold mb-3">Сохраните уверенность!</h3>
+                <p class="text-on-primary-container text-sm leading-relaxed mb-6">
+                    Бронируя встречу, вы получаете приоритетную консультацию по вашему вопросу.
+                </p>
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-3xl">verified_user</span>
+                    <span class="font-medium">100% Конфиденциально</span>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Запись на консультацию</h5>
-            </div>
-            <div class="card-body">
+        <div class="lg:col-span-7">
+            <div class="bg-surface-container-lowest p-8 md:p-10 rounded-xl border border-outline-variant/20 shadow-sm">
+                <h2 class="text-2xl font-bold text-primary mb-2">Оформление записи</h2>
+                <p class="text-sm text-on-surface-variant mb-8">Выберите дату, время и опишите свою проблему.</p>
+                
                 {% if message %}
-                    <div class="alert alert-success">{{ message }}</div>
+                    {% if "занято" in message %}
+                        <div class="bg-error-container text-on-error-container p-4 rounded-lg mb-8 text-sm font-medium flex items-center gap-2">
+                            <span class="material-symbols-outlined mt-0.5">error</span>
+                            {{ message }}
+                        </div>
+                    {% else %}
+                        <div class="bg-[#d4edda] text-[#155724] p-4 rounded-lg mb-8 text-sm font-medium flex items-center gap-2 border border-[#c3e6cb]">
+                            <span class="material-symbols-outlined mt-0.5">check_circle</span>
+                            {{ message }}
+                        </div>
+                    {% endif %}
                 {% endif %}
-                {% if can_book %}
-                <form method="post">
-                    <div class="form-group">
-                        <label>Дата</label>
-                        <input type="date" name="date" class="form-control" required>
+
+                <form method="post" class="space-y-8">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-4">Дата</label>
+                        <input type="date" name="date" required min="{{ min_date }}"
+                            class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-secondary/50 text-primary">
                     </div>
-                    <div class="form-group">
-                        <label>Время</label>
-                        <div class="row">
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-4">Время</label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {% for slot in slots %}
-                            <div class="col-3 mb-2">
                                 {% if slot in booked_times %}
-                                    <div class="p-2 text-center bg-secondary text-white rounded">{{ slot }} занят</div>
+                                    <div class="py-4 px-2 text-center rounded-lg bg-surface-container-high border border-outline-variant/20 opacity-50 cursor-not-allowed">
+                                        <span class="text-lg font-bold text-outline block line-through mb-1">{{ slot }}</span>
+                                        <span class="text-[10px] font-bold uppercase text-error tracking-wider">Занято</span>
+                                    </div>
                                 {% else %}
-                                    <label class="d-block">
-                                        <input type="radio" name="time" value="{{ slot }}" required>
-                                        {{ slot }}
+                                    <label class="block cursor-pointer relative text-center group">
+                                        <input type="radio" name="time" value="{{ slot }}" class="peer hidden" required {% if not can_book %}disabled{% endif %}>
+                                        <div class="py-4 px-2 rounded-lg border border-outline-variant/30 peer-checked:bg-secondary-container/10 peer-checked:border-2 peer-checked:border-secondary transition-all opacity-100 {% if not can_book %}cursor-not-allowed opacity-75{% endif %}">
+                                            <span class="text-lg font-bold text-primary block peer-checked:text-secondary group-hover:text-secondary transition-colors mb-1">{{ slot }}</span>
+                                            <span class="text-[10px] font-bold uppercase text-on-surface-variant tracking-wider peer-checked:text-secondary">Свободно</span>
+                                        </div>
                                     </label>
                                 {% endif %}
-                            </div>
                             {% endfor %}
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Опишите вашу проблему</label>
-                        <textarea name="problem" class="form-control" rows="4" required placeholder="Кратко опишите ваш вопрос..."></textarea>
+                    
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-4">Опишите вашу проблему</label>
+                        <textarea name="problem" rows="4" class="w-full bg-surface-container-low border-none rounded-lg px-6 py-4 focus:ring-2 focus:ring-secondary/50 text-primary resize-none placeholder-outline-variant" placeholder="Коротко опишите суть вашего вопроса..." required {% if not can_book %}disabled{% endif %}></textarea>
                     </div>
-                    <button type="submit" class="btn btn-success">Отправить заявку</button>
+
+                    {% if can_book %}
+                    <button type="submit" class="w-full bg-secondary text-on-primary py-4 rounded-lg font-semibold text-lg hover:bg-on-secondary-container transition-all shadow-md flex items-center justify-center gap-2">
+                        <span>Подтвердить запись</span>
+                        <span class="material-symbols-outlined">send</span>
+                    </button>
+                    {% else %}
+                    <div class="w-full bg-surface-container-high py-4 rounded-lg font-semibold text-center text-on-surface-variant flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">lock</span>
+                        <span>Только клиенты могут бронировать</span>
+                    </div>
+                    {% endif %}
                 </form>
-                {% else %}
-                <div class="alert alert-warning">Только клиенты могут записываться к юристам.</div>
-                {% endif %}
             </div>
         </div>
     </div>
 </div>
+
+<script>
+document.querySelector('input[name="date"]').min = new Date().toISOString().split('T')[0];
+</script>
 {% endblock %}

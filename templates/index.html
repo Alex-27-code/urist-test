@@ -1,52 +1,109 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="mb-4">Юридическая консультация</h1>
+<div id="home-section" class="tab-content">
+<header class="mb-20">
+    <h1 class="text-6xl font-semibold text-primary mb-6 max-w-3xl leading-[1.1]">
+        Профессиональная юридическая помощь в один клик.
+    </h1>
+    <p class="text-xl text-on-surface-variant max-w-2xl leading-relaxed mb-8">
+        Забронируйте консультацию с ведущими юристами. Выберите удобное время и опишите ваш вопрос для эффективной подготовки к встрече.
+    </p>
 
-{% if current_user.is_authenticated %}
-    {% if lawyers %}
-    <h3 class="mb-3">Доступные юристы</h3>
-    <div class="row">
-        {% for lawyer in lawyers %}
-        <div class="col-md-6 mb-3">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-start">
-                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center mr-3" style="width:60px;height:60px;font-size:24px;font-weight:bold;">
-                            {% if lawyer.photo %}
-                                <img src="{{ url_for('static', filename='uploads/' + lawyer.photo) }}" style="width:60px;height:60px;object-fit:cover;border-radius:50%;">
-                            {% else %}
-                                {{ lawyer.name[0] if lawyer.name else '?' }}
-                            {% endif %}
+    {% if not current_user.is_authenticated %}
+        <div class="flex gap-4">
+            <a href="/login" class="bg-primary text-on-primary px-8 py-3 rounded-lg font-semibold hover:bg-primary-container transition-all">Войти</a>
+            <a href="/register" class="bg-secondary text-on-secondary px-8 py-3 rounded-lg font-semibold hover:bg-secondary-fixed transition-all border border-secondary shadow-md hover:shadow-lg">Зарегистрироваться</a>
+        </div>
+    {% else %}
+        <div class="bg-surface-container p-6 rounded-lg inline-block border border-outline-variant/30 text-left">
+            <h2 class="text-2xl font-bold text-primary mb-2">Добро пожаловать, {{ current_user.name }}!</h2>
+            <p class="text-on-surface-variant">
+                {% if current_user.role == 'client' %}Вы зарегистрированы как клиент
+                {% elif current_user.role == 'lawyer' %}Вы зарегистрированы как юрист
+                {% else %}Вы администратор{% endif %}
+            </p>
+        </div>
+
+        {% if lawyers %}
+        <div class="mt-8 text-left">
+            <h2 class="text-3xl font-semibold text-primary mb-6">Доступные юристы</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl">
+                {% for lawyer in lawyers %}
+                <a href="/lawyer/{{ lawyer.id }}" class="group bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 hover:shadow-lg transition-all hover:border-secondary flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-start gap-4 mb-4">
+                            <div class="w-12 h-12 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-xl font-bold flex-shrink-0 overflow-hidden">
+                                {% if lawyer.photo %}
+                                    <img src="{{ url_for('static', filename='uploads/' + lawyer.photo) }}" class="w-full h-full object-cover" alt="">
+                                {% else %}
+                                    <span class="material-symbols-outlined">person</span>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-primary group-hover:text-secondary transition-colors">{{ lawyer.name }}</h3>
+                                {% if lawyer.specialty %}
+                                    <p class="text-xs text-secondary uppercase tracking-wider">{{ lawyer.specialty }}</p>
+                                {% endif %}
+                            </div>
                         </div>
-                        <div class="flex-grow-1">
-                            <h5 class="card-title">{{ lawyer.name }}</h5>
-                            {% if lawyer.specialty %}
-                                <p class="text-muted mb-1"><small>{{ lawyer.specialty }}</small></p>
-                            {% endif %}
-                            {% if lawyer.price %}
-                                <p class="font-weight-bold mb-1">{{ lawyer.price }}</p>
-                            {% endif %}
-                            {% if lawyer.schedule %}
-                                <p class="text-muted mb-2"><small>{{ lawyer.schedule }}</small></p>
-                            {% endif %}
-                            {% if lawyer.about %}
-                                <p class="text-muted mb-2"><small>{{ lawyer.about }}</small></p>
-                            {% endif %}
-                            <a href="/lawyer/{{ lawyer.id }}" class="btn btn-primary btn-sm">Записаться</a>
-                        </div>
+                        {% if lawyer.about %}
+                        <p class="text-sm text-on-surface-variant mt-2 line-clamp-3">{{ lawyer.about }}</p>
+                        {% endif %}
+                        {% if lawyer.price %}
+                        <p class="text-sm font-semibold text-primary mt-3">{{ lawyer.price }}</p>
+                        {% endif %}
                     </div>
-                </div>
+                    <div class="mt-4 font-semibold text-secondary flex items-center gap-2">
+                        <span>Записаться</span>
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                    </div>
+                </a>
+                {% endfor %}
             </div>
         </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="alert alert-info">Юристы скоро появятся.</div>
+        {% endif %}
     {% endif %}
-{% else %}
-    <div class="alert alert-info">
-        <a href="/login">Войдите</a> или <a href="/register">зарегистрируйтесь</a> чтобы увидеть юристов.
-    </div>
-{% endif %}
+</header>
+</div>
+
+<div id="about-section" class="tab-content hidden">
+<header class="mb-20">
+<h1 class="text-6xl font-semibold text-primary mb-6 max-w-3xl leading-[1.1]">О нашей компании</h1>
+<p class="text-xl text-on-surface-variant max-w-2xl leading-relaxed">
+Мы - команда профессиональных юристов с опытом более 15 лет. Мы защищаем ваши права и предоставляем высококвалифицированную юридическую помощь.
+</p>
+</header>
+</div>
+
+<div id="contacts-section" class="tab-content hidden">
+<header class="mb-20">
+<h1 class="text-6xl font-semibold text-primary mb-6 max-w-3xl leading-[1.1]">Контакты</h1>
+<p class="text-xl text-on-surface-variant max-w-2xl leading-relaxed">
+Свяжитесь с нами любым удобным способом:<br>
+Телефон: +7 (999) 123-45-67<br>
+Email: info@urist-zapis.ru<br>
+Адрес: г. Москва, ул. Правовая, д. 1
+</p>
+</header>
+</div>
+
+<script>
+function showSection(id) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+}
+window.addEventListener('hashchange', () => {
+    let hash = window.location.hash.substring(1);
+    if (['home-section', 'about-section', 'contacts-section'].includes(hash)) {
+        showSection(hash);
+    }
+});
+if (window.location.hash) {
+    let hash = window.location.hash.substring(1);
+    if (['home-section', 'about-section', 'contacts-section'].includes(hash)) {
+        showSection(hash);
+    }
+}
+</script>
 {% endblock %}

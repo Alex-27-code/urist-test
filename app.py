@@ -164,7 +164,7 @@ def lawyer_profile(lawyer_id):
             message = 'Заявка отправлена! Ожидайте подтверждения.'
         elif time in booked_times:
             message = 'Это время уже занято.'
-    return render_template('lawyer_profile.html', lawyer=lawyer, slots=slots, booked_times=booked_times, message=message, can_book=(current_user.role == 'client'))
+    return render_template('lawyer_profile.html', lawyer=lawyer, slots=slots, booked_times=booked_times, message=message, can_book=(current_user.role == 'client'), min_date=datetime.date.today().isoformat())
 
 
 @app.route('/profile', methods=['GET', 'POST'])

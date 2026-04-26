@@ -155,21 +155,29 @@ def lawyer_profile(lawyer_id):
         return redirect('/')
     slots = [f"{str(h).zfill(2)}:{str(m).zfill(2)}" for h in range(9, 19) for m in (0, 30) if not (h == 18 and m == 30)]
     bookings = db_sess.query(BookingModel).filter(BookingModel.lawyer_id == lawyer_id).all()
-    booked_times = [b.time for b in bookings if b.status != 'rejected']
+    booked_slots = {}  # {date: [times]}
+    for b in bookings:
+        if b.status != 'rejected' and b.date:
+            if b.date not in booked_slots:
+                booked_slots[b.date] = []
+            booked_slots[b.date].append(b.time)
     message = None
     if request.method == 'POST' and current_user.role == 'client':
         time = request.form.get('time')
         problem = request.form.get('problem')
         date = request.form.get('date')
-        if time and problem and time not in booked_times:
+        if time and problem and time not in booked_slots.get(date, []):
             booking = BookingModel(client_id=current_user.id, lawyer_id=lawyer.id, date=date or '', time=time, problem=problem, status='pending')
             db_sess.add(booking)
             db_sess.commit()
-            booked_times.append(time)
+            if date not in booked_slots:
+                booked_slots[date] = []
+            booked_slots[date].append(time)
             message = 'Заявка отправлена! Ожидайте подтверждения.'
-        elif time in booked_times:
+        elif time in booked_slots.get(date, []):
             message = 'Это время уже занято.'
-    return render_template('lawyer_profile.html', lawyer=lawyer, slots=slots, booked_times=booked_times, message=message, can_book=(current_user.role == 'client'), min_date=datetime.date.today().isoformat())
+    selected_date = request.form.get('date', '')
+    return render_template('lawyer_profile.html', lawyer=lawyer, slots=slots, booked_slots=booked_slots, selected_date=selected_date, message=message, can_book=(current_user.role == 'client'), min_date=datetime.date.today().isoformat())
 
 
 @app.route('/profile', methods=['GET', 'POST'])

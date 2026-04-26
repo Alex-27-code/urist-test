@@ -177,7 +177,7 @@ def lawyer_profile(lawyer_id):
             message = 'Заявка отправлена! Ожидайте подтверждения.'
         elif time in booked_slots.get(date, []):
             message = 'Это время уже занято.'
-    selected_date = request.form.get('date', '')
+    selected_date = request.form.get('date', '') or datetime.date.today().isoformat()
     return render_template('lawyer_profile.html', lawyer=lawyer, slots=slots, booked_slots=booked_slots, selected_date=selected_date, message=message, can_book=(current_user.role == 'client'), min_date=datetime.date.today().isoformat())
 
 

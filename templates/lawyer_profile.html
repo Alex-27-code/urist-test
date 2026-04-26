@@ -84,7 +84,7 @@
                 <form method="post" class="space-y-8">
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-4">Дата</label>
-                        <input type="date" name="date" required min="{{ min_date }}"
+                        <input type="date" name="date" required min="{{ min_date }}" value="{{ selected_date if selected_date else '' }}"
                             class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-secondary/50 text-primary">
                     </div>
 

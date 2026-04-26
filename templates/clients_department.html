@@ -49,6 +49,7 @@
                     {% if b.status == 'accepted' %}<span class="text-emerald-600">Принято ✓</span>
                     {% else %}<span class="text-error">Отклонено ✗</span>{% endif %}
                 </div>
+                <a href="/admin/booking/{{ b.id }}/delete" onclick="return confirm('Удалить заявку?')" class="block text-center mt-2 text-error hover:underline text-xs">Удалить заявку</a>
                 {% endif %}
             </div>
         </div>

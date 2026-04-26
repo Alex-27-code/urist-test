@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <a href="/" class="inline-flex items-center gap-2 text-secondary hover:underline font-medium mb-8">
+        <span class="material-symbols-outlined text-sm">arrow_back</span>
+        На главную
+    </a>
+
+    <div class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/20 shadow-sm">
+        <h1 class="text-3xl font-semibold text-primary mb-6">Настройки сайта</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="bg-green-100 text-green-800 p-4 rounded-lg mb-6">
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form method="post" class="space-y-6">
+            <div>
+                <label class="block text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-2">О нас</label>
+                <textarea name="about_text" rows="4" class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-secondary/50 text-primary">{{ settings.about_text or '' }}</textarea>
+            </div>
+
+            <div>
+                <label class="block text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-2">Контакты</label>
+                <textarea name="contact_text" rows="3" class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-secondary/50 text-primary">{{ settings.contact_text or '' }}</textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-2">Телефон</label>
+                    <input type="text" name="phone" value="{{ settings.phone or '' }}" class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-secondary/50 text-primary">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-2">Адрес</label>
+                    <input type="text" name="address" value="{{ settings.address or '' }}" class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-secondary/50 text-primary">
+                </div>
+            </div>
+
+            <button type="submit" class="bg-primary text-on-primary px-8 py-3 rounded-lg font-semibold hover:bg-primary-container transition-all">
+                Сохранить
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

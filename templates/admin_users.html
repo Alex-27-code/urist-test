@@ -40,6 +40,9 @@
                     <td class="px-6 py-4 text-sm text-on-surface-variant">
                         {{ u.created_date.strftime('%d.%m.%Y') if u.created_date else '-' }}
                     </td>
+                    <td class="px-6 py-4">
+                        <a href="/admin/user/{{ u.id }}/edit" class="text-secondary hover:underline text-sm font-medium">Редактировать</a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

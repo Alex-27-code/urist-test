@@ -10,6 +10,7 @@ from werkzeug.utils import secure_filename
 from backend.database import global_init, create_session, SqlAlchemyBase
 from backend.database.models.users_model import UserModel
 from backend.database.models.booking_model import BookingModel
+from backend.database.models.settings_model import SettingsModel
 import backend.database.default_data as dd
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
@@ -79,12 +80,12 @@ class ProfileForm(FlaskForm):
 
 @app.route('/')
 def index():
+    db_sess = create_session()
+    lawyers = []
+    settings = db_sess.get(SettingsModel, 1)
     if current_user.is_authenticated:
-        db_sess = create_session()
         lawyers = db_sess.query(UserModel).filter(UserModel.role == 'lawyer').all()
-    else:
-        lawyers = []
-    return render_template('index.html', lawyers=lawyers)
+    return render_template('index.html', lawyers=lawyers, settings=settings)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -240,6 +241,76 @@ def booking_action(booking_id, action):
     booking = db_sess.get(BookingModel, booking_id)
     if booking and action in ('accept', 'reject'):
         booking.status = action
+        db_sess.commit()
+    return redirect('/clients_department')
+
+
+@app.route('/admin/settings', methods=['GET', 'POST'])
+@login_required
+def admin_settings():
+    if current_user.role != 'admin':
+        return redirect('/')
+    db_sess = create_session()
+    settings = db_sess.get(SettingsModel, 1)
+    if not settings:
+        settings = SettingsModel(id=1)
+        db_sess.add(settings)
+        db_sess.commit()
+    if request.method == 'POST':
+        settings.about_text = request.form.get('about_text', '')
+        settings.contact_text = request.form.get('contact_text', '')
+        settings.phone = request.form.get('phone', '')
+        settings.address = request.form.get('address', '')
+        db_sess.commit()
+        flash('Настройки сохранены!', 'success')
+        return redirect('/admin/settings')
+    return render_template('admin_settings.html', settings=settings)
+
+
+@app.route('/admin/user/<int:user_id>/delete', methods=['GET'])
+@login_required
+def admin_delete_user(user_id):
+    if current_user.role != 'admin':
+        return redirect('/')
+    db_sess = create_session()
+    user = db_sess.get(UserModel, user_id)
+    if user and user.id != current_user.id:
+        db_sess.delete(user)
+        db_sess.commit()
+    return redirect('/users')
+
+
+@app.route('/admin/user/<int:user_id>/edit', methods=['GET', 'POST'])
+@login_required
+def admin_edit_user(user_id):
+    if current_user.role != 'admin':
+        return redirect('/')
+    db_sess = create_session()
+    user = db_sess.get(UserModel, user_id)
+    if not user:
+        return redirect('/users')
+    if request.method == 'POST':
+        user.name = request.form.get('name', '')
+        user.specialty = request.form.get('specialty', '')
+        user.experience = request.form.get('experience', '')
+        user.price = request.form.get('price', '')
+        user.schedule = request.form.get('schedule', '')
+        user.about = request.form.get('about', '')
+        db_sess.commit()
+        flash('Профиль обновлён!', 'success')
+        return redirect('/users')
+    return render_template('admin_edit_user.html', user=user)
+
+
+@app.route('/admin/booking/<int:booking_id>/delete', methods=['GET'])
+@login_required
+def admin_delete_booking(booking_id):
+    if current_user.role != 'admin':
+        return redirect('/')
+    db_sess = create_session()
+    booking = db_sess.get(BookingModel, booking_id)
+    if booking:
+        db_sess.delete(booking)
         db_sess.commit()
     return redirect('/clients_department')
 

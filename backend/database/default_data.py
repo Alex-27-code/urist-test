@@ -1,5 +1,6 @@
 from backend.database import create_session
 from backend.database.models.users_model import UserModel
+from backend.database.models.settings_model import SettingsModel
 
 
 def default_data():
@@ -39,3 +40,13 @@ def default_data():
         db_sess.add(u)
 
     db_sess.commit()
+
+    if not db_sess.query(SettingsModel).filter(SettingsModel.id == 1).first():
+        s = SettingsModel()
+        s.id = 1
+        s.about_text = 'Мы — команда профессиональных юристов, готовых помочь вам в любых правовых вопросах. Ю.Р.И.С.Т. — ваш надёжный партнёр в юридических делах.'
+        s.contact_text = 'Свяжитесь с нами для консультации.'
+        s.phone = '+7 (999) 123-45-67'
+        s.address = 'Москва, ул. Примерная, д. 1'
+        db_sess.add(s)
+        db_sess.commit()

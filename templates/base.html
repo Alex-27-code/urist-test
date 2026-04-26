@@ -102,6 +102,8 @@
                 {% endif %}
                 {% if current_user.is_authenticated and current_user.role == 'admin' %}
                     <a class="nav-link hover:text-secondary transition-colors" href="/clients_department">Заявки</a>
+                    <a class="nav-link hover:text-secondary transition-colors" href="/users">Пользователи</a>
+                    <a class="nav-link hover:text-secondary transition-colors" href="/admin/settings">Настройки</a>
                 {% endif %}
             </div>
             

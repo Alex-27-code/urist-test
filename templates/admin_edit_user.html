@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <a href="/users" class="inline-flex items-center gap-2 text-secondary hover:underline font-medium mb-8">
+        <span class="material-symbols-outlined text-sm">arrow_back</span>
+        К пользователям
+    </a>
+
+    <div class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/20 shadow-sm">
+        <h1 class="text-3xl font-semibold text-primary mb-2">Редактирование: {{ user.name }}</h1>
+        <p class="text-on-surface-variant mb-6">{{ user.email }} · <span class="uppercase font-medium">{{ user.role }}</span></p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="bg-green-100 text-green-800 p-4 rounded-lg mb-6">
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form method="post" class="space-y-6">
+            <div>
+                <label class="block text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-2">ФИО</label>
+                <input type="text" name="name" value="{{ user.name or '' }}" class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-secondary/50 text-primary">
+            </div>
+
+            {% if user.role == 'lawyer' %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-2">Специализация</label>
+                    <input type="text" name="specialty" value="{{ user.specialty or '' }}" class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-secondary/50 text-primary">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-2">Опыт работы</label>
+                    <input type="text" name="experience" value="{{ user.experience or '' }}" class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-secondary/50 text-primary">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-2">Стоимость</label>
+                    <input type="text" name="price" value="{{ user.price or '' }}" class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-secondary/50 text-primary">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-2">График</label>
+                    <input type="text" name="schedule" value="{{ user.schedule or '' }}" class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-secondary/50 text-primary">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-2">О себе</label>
+                <textarea name="about" rows="3" class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-secondary/50 text-primary">{{ user.about or '' }}</textarea>
+            </div>
+            {% endif %}
+
+            <button type="submit" class="bg-primary text-on-primary px-8 py-3 rounded-lg font-semibold hover:bg-primary-container transition-all">
+                Сохранить изменения
+            </button>
+        </form>
+
+        <div class="mt-8 pt-6 border-t border-outline-variant/20">
+            <a href="/admin/user/{{ user.id }}/delete" onclick="return confirm('Удалить пользователя?')" class="text-error hover:underline font-medium flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">delete</span>
+                Удалить пользователя
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

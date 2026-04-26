@@ -13,6 +13,7 @@ from backend.database.models.booking_model import BookingModel
 import backend.database.default_data as dd
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
+from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -129,7 +130,11 @@ def register():
             user.photo = filename
         user.set_password(form.password.data)
         db_sess.add(user)
-        db_sess.commit()
+        try:
+            db_sess.commit()
+        except IntegrityError:
+            db_sess.rollback()
+            return render_template('register.html', form=form, message='Пользователь с такой почтой уже существует')
         return redirect('/login')
     return render_template('register.html', form=form)
 
